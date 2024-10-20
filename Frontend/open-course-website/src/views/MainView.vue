@@ -6,7 +6,7 @@
     </el-header>
     <el-container>
       <el-aside class="sidebar">
-        <el-button type="primary" class="create-course-btn">+ 创建课程</el-button>
+        <el-button type="primary" class="create-course-btn" @click="createCourse">+ 创建课程</el-button>
         <el-menu default-active="1" class="sidebar-menu">
           <el-menu-item index="1" >
             <el-icon><Calendar /></el-icon>
@@ -54,7 +54,7 @@
 
 <script>
 export default {
-  name: 'App',
+  name: 'MainView',
   components: {
 
   },
@@ -112,6 +112,9 @@ export default {
         default:
           return 'info';
       }
+    },
+    createCourse() {
+      alert('创建课程');
     },
   },
 };

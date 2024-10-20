@@ -14,6 +14,22 @@
             <el-icon color="black"><Lock /></el-icon>
             <input type="text" placeholder="Password" style="margin-left: 10px;">
           </div>
+          <div>
+            <el-icon><Aim /></el-icon>
+            <el-select
+                v-model="selectedIdentity"
+                placeholder="Select your identity"
+                size="large"
+                style="width: 240px; margin-left: 10px;"
+            >
+              <el-option
+                  v-for="item in identities"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+              />
+            </el-select>
+          </div>
           <h3 style="font-size: 12px">Forgot your password?</h3>
           <button class="submit-button" @click="signIn">Sign in</button>
         </div>
@@ -58,6 +74,14 @@ export default {
   components: {},
   data() {
     return {
+      username: '',
+      password: '',
+      selectedIdentity: '',
+      identities: [
+        { value: 'student', label: 'Student' },
+        { value: 'teacher', label: 'Teacher' },
+        { value: 'admin', label: 'Admin' }
+      ],
       mainPanel: 'mainPanel-signIn',
       overlay: 'overlay-signUp',
       status: 'signIn'
@@ -91,6 +115,10 @@ export default {
 </script>
 
 <style>
+::v-deep .el-select .el-input__inner {
+   /* Change this to your desired color */
+}
+
 .center {
   width: 1920px;
   height: 1080px;
