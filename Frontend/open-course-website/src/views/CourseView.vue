@@ -10,23 +10,30 @@
       </el-aside>
       <el-main>
         <h2 style="margin-bottom: 20px;">课程章节</h2>
+        <div style="display: flex">
+          <div class="chapterTypeBox">教学类</div>
+          <div class="chapterTypeBox">作业类</div>
+          <div class="chapterTypeBox">项目类</div>
+        </div>
+
         <el-row :gutter="20" v-for="chapter in this.chapters" :key="chapter.chapterID">
           <el-col :span="24" >
-            <el-card>
+            <el-card :style="{backgroundColor: getChapterColor(chapter.chapterType)}">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                   <h4>{{ chapter.chapterName }}</h4>
                   <p>{{ chapter.chapterDescription }}</p>
                 </div>
-                <el-button-group>
-                  <el-button>
-                    <el-icon><edit /></el-icon>
-                  </el-button>
-                  <el-button>
-                    <el-icon><delete /></el-icon>
-                  </el-button>
-                </el-button-group>
+                <el-button @click="openChapter">{{ getChapterStartText(chapter.chapterType) }}</el-button>
               </div>
+              <el-button-group>
+                <el-button>
+                  <el-icon><edit /></el-icon>
+                </el-button>
+                <el-button>
+                  <el-icon><delete /></el-icon>
+                </el-button>
+              </el-button-group>
             </el-card>
           </el-col>
         </el-row>
@@ -70,16 +77,43 @@ export default {
     };
   },
   methods: {
+    openChapter(){
+
+    },
     getChapterColor(type) {
       switch (type) {
         case '教学类':
-          return 'success';
+          return '#dcfce7';
         case '作业类':
-          return 'warning';
+          return '#dbeafe';
         case '项目类':
-          return 'info';
+          return '#ffedd5';
         default:
           return 'primary';
+      }
+    },
+    getChapterStartText(type){
+      switch (type) {
+        case '教学类':
+          return '开始学习';
+        case '作业类':
+          return '开始作业';
+        case '项目类':
+          return '开始项目';
+        default:
+          return '开始';
+      }
+    },
+    getChapterStartButtonColor(type){
+      switch (type) {
+        case '教学类':
+          return '开始学习';
+        case '作业类':
+          return '开始作业';
+        case '项目类':
+          return '开始项目';
+        default:
+          return '开始';
       }
     }
   },
@@ -95,4 +129,46 @@ export default {
   margin-bottom: 20px;
 }
 
+.el-row:last-child {
+  margin-bottom: 0;
+}
+
+.el-col {
+  border-radius: 4px;
+}
+
+.chapterTypeBox {
+  width: 80px;
+  height: 40px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: normal;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+}
+
+.chapterTypeBox:nth-child(1){
+  background-color: #dcfce7;
+  color: #46895f;
+}
+
+.chapterTypeBox:nth-child(2){
+  background-color: #dbeafe;
+  color: #3554b9;
+}
+
+.chapterTypeBox:nth-child(3){
+  background-color: #ffedd5;
+  color: #a54726;
+}
+
+.chapter-move {
+
+}
 </style>
