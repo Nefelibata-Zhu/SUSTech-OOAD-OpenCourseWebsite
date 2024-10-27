@@ -16,27 +16,54 @@
           <div class="chapterTypeBox">项目类</div>
         </div>
 
-        <el-row :gutter="20" v-for="chapter in this.chapters" :key="chapter.chapterID">
+        <el-row :gutter="20" v-for="(chapter, index) in this.chapters" :key="chapter.chapterID">
           <el-col :span="24" >
-            <el-card :style="{backgroundColor: getChapterColor(chapter.chapterType)}">
+            <el-card :style="{backgroundColor: getChapterBackgroundColor(chapter.chapterType)}">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                  <h4>{{ chapter.chapterName }}</h4>
-                  <p>{{ chapter.chapterDescription }}</p>
+                  <h4 :style="[{'text-align': 'left'}, {color: getChapterTextColor(chapter.chapterType)}]">{{ chapter.chapterName }}</h4>
+                  <p :style="[{'text-align': 'left'}, {color: getChapterTextColor(chapter.chapterType)}]">{{ chapter.chapterDescription }}</p>
                 </div>
-                <el-button @click="openChapter">{{ getChapterStartText(chapter.chapterType) }}</el-button>
+                <div class="open-chapter-button" :style="[{color: '#fff'}, {backgroundColor: getChapterTextColor(chapter.chapterType)}]" @click="openChapter">{{ getChapterStartText(chapter.chapterType) }}</div>
               </div>
-              <el-button-group>
-                <el-button>
-                  <el-icon><edit /></el-icon>
-                </el-button>
-                <el-button>
-                  <el-icon><delete /></el-icon>
-                </el-button>
-              </el-button-group>
+              <div class="container">
+                <el-icon size="20px" class="edit-and-delete-icons" @click="this.currentChapter={...chapter}; showAddChapterDialog=true"><edit /></el-icon>
+                <el-icon size="20px" class="edit-and-delete-icons" @click="deleteChapter(index)"><delete /></el-icon>
+              </div>
+<!--              <el-button-group>-->
+<!--                <el-button @click="this.currentChapter={...chapter}; showAddChapterDialog=true">-->
+<!--                  <el-icon><edit /></el-icon>-->
+<!--                </el-button>-->
+<!--                <el-button @click="deleteChapter(index)">-->
+<!--                  <el-icon><delete /></el-icon>-->
+<!--                </el-button>-->
+<!--              </el-button-group>-->
             </el-card>
           </el-col>
         </el-row>
+        <div class="add-chapter-button" @click="this.currentChapter={...this.newChapter}; showAddChapterDialog=true">
+          <el-icon><circle-plus /></el-icon>
+          <span>添加新章节</span>
+        </div>
+        <el-dialog title="添加新章节" v-model="showAddChapterDialog">
+          <el-form ref="newChapter" :model="currentChapter">
+            <el-form-item label="章节名称" prop="chapterName">
+              <el-input v-model="currentChapter.chapterName"></el-input>
+            </el-form-item>
+            <el-form-item label="章节描述" prop="chapterDescription">
+              <el-input v-model="currentChapter.chapterDescription"></el-input>
+            </el-form-item>
+            <el-form-item label="章节类型" prop="chapterType">
+              <el-select v-model="currentChapter.chapterType" placeholder="请选择章节类型">
+                <el-option label="教学类" value="教学类"></el-option>
+                <el-option label="作业类" value="作业类"></el-option>
+                <el-option label="项目类" value="项目类"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <el-button @click="this.$refs.newChapter.resetFields(); showAddChapterDialog = false">取消</el-button>
+          <el-button type="primary" @click="addNewChapter()">确定</el-button>
+        </el-dialog>
       </el-main>
     </el-container>
   </div>
@@ -44,9 +71,12 @@
 
 
 <script>
+import {CirclePlus} from "@element-plus/icons-vue";
+
 export default {
   name: 'CourseView',
   components: {
+    CirclePlus
 
   },
   data() {
@@ -73,14 +103,21 @@ export default {
           chapterDescription: '用Java设计并实现一个象棋小游戏',
           chapterType: '项目类',
         }
-      ]
+      ],
+      showAddChapterDialog: false,
+      currentChapter: null,
+      newChapter: {
+        chapterName: '',
+        chapterDescription: '',
+        chapterType: '',
+      },
     };
   },
   methods: {
     openChapter(){
 
     },
-    getChapterColor(type) {
+    getChapterBackgroundColor(type) {
       switch (type) {
         case '教学类':
           return '#dcfce7';
@@ -88,6 +125,18 @@ export default {
           return '#dbeafe';
         case '项目类':
           return '#ffedd5';
+        default:
+          return 'primary';
+      }
+    },
+    getChapterTextColor(type) {
+      switch (type) {
+        case '教学类':
+          return '#46895f';
+        case '作业类':
+          return '#3554b9';
+        case '项目类':
+          return '#a54726';
         default:
           return 'primary';
       }
@@ -104,18 +153,31 @@ export default {
           return '开始';
       }
     },
-    getChapterStartButtonColor(type){
-      switch (type) {
-        case '教学类':
-          return '开始学习';
-        case '作业类':
-          return '开始作业';
-        case '项目类':
-          return '开始项目';
-        default:
-          return '开始';
+    addNewChapter(){
+      if (this.currentChapter.chapterID) {
+        // 如果有id，则编辑已存在章节
+        console.log('update chapter');
+        const index = this.chapters.findIndex(c => c.chapterID === this.currentChapter.chapterID);
+        if (index !== -1) {
+          this.chapters.splice(index, 1, {...this.currentChapter});
+        }
+      } else {
+        // 没有id，添加新章节
+        const newId = this.chapters.length + 1;  // 确保ID唯一
+        const newChapter = {
+          chapterID: newId,
+          ...this.currentChapter,
+        };
+        this.chapters.push(newChapter);
       }
-    }
+      this.showAddChapterDialog = false;
+    },
+    editChapter(){
+
+    },
+    deleteChapter(index){
+      this.chapters.splice(index, 1);
+    },
   },
 };
 </script>
@@ -135,6 +197,21 @@ export default {
 
 .el-col {
   border-radius: 4px;
+}
+
+.open-chapter-button {
+  height: 12px;
+  text-align: center;
+  border-radius: 25px;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 15px; /* 顶部间距 */
+  margin-right: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px; /* 文字大小 */
+  color: #666; /* 文字颜色 */
 }
 
 .chapterTypeBox {
@@ -168,7 +245,31 @@ export default {
   color: #a54726;
 }
 
-.chapter-move {
+.add-chapter-button {
+  height: 50px;
+  border: 2px dashed #ccc; /* 虚线边框 */
+  text-align: center;
+  padding: 20px;
+  cursor: pointer;
+  margin-top: 20px; /* 顶部间距 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px; /* 文字大小 */
+  color: #666; /* 文字颜色 */
+}
 
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  height: 100%;
+}
+
+.edit-and-delete-icons {
+  cursor: pointer;
+  margin-right: 6px;
+  align-self: flex-end; /* 将图标组推向右下角 */
+  padding: 10px; /* 右下角留点间隙 */
 }
 </style>
