@@ -8,11 +8,11 @@
           <h2 style="font-size: 25px; color: black">Sign in</h2>
           <div>
             <el-icon><User /></el-icon>
-            <input type="text" placeholder="Account" style="margin-left: 10px;">
+            <input v-model='username' type="text" placeholder="Account" style="margin-left: 10px;">
           </div>
           <div>
             <el-icon color="black"><Lock /></el-icon>
-            <input type="text" placeholder="Password" style="margin-left: 10px;">
+            <input v-model='password' type="text" placeholder="Password" style="margin-left: 10px;">
           </div>
           <div>
             <el-icon><Aim /></el-icon>
@@ -114,7 +114,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 ::v-deep .el-select .el-input__inner {
    /* Change this to your desired color */
 }

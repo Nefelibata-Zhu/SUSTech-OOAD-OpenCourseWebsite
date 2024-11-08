@@ -5,6 +5,7 @@
     <router-link to="/login">Login</router-link> |
     <router-link to="/main">Main</router-link> |
     <router-link to="/course">Course</router-link> |
+    <router-link to="/chapter">Chapter</router-link> |
     <router-link to="/test">Test</router-link> |
   </nav>
   <router-view/>
