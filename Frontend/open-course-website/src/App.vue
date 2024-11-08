@@ -6,6 +6,9 @@
     <router-link to="/main">Main</router-link> |
     <router-link to="/course">Course</router-link> |
     <router-link to="/chapter">Chapter</router-link> |
+    <router-link to="/admin">Admin</router-link> |
+    <router-link to="/rank">Rank</router-link> |
+    <router-link to="/remark">Remark</router-link> |
     <router-link to="/test">Test</router-link> |
   </nav>
   <router-view/>
