@@ -1,108 +1,128 @@
+<!--<script>-->
+
+<!--</script>-->
+
+<!--<template>-->
+<!--  <el-card class="comment-card">-->
+<!--    <div class="comment-header">-->
+<!--      <el-avatar class="comment-avatar" size="large" src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>-->
+<!--      <div class="comment-info">-->
+<!--        <div class="comment-name">COMMENTOR</div>-->
+<!--        <div class="comment-date">20 April 2022, at 14:88 PM</div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="comment-body">-->
+<!--      Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime quisquam vero adipisci beatae voluptas dolor ame.-->
+<!--    </div>-->
+<!--  </el-card>-->
+<!--</template>-->
+
+<!--<style scoped>-->
+<!--.comment-card {-->
+<!--  width: 100%; /* Adjust based on your layout */-->
+<!--  border-radius: 8px;-->
+<!--  box-shadow: none;-->
+<!--  border: 1px solid #ccc;-->
+<!--}-->
+
+<!--.comment-header {-->
+<!--  display: flex;-->
+<!--  align-items: center;-->
+<!--  margin-bottom: 12px; /* Spacing between header and body */-->
+<!--}-->
+
+<!--.comment-avatar {-->
+<!--  margin-right: 12px;-->
+<!--}-->
+
+<!--.comment-info {-->
+<!--  flex-grow: 1;-->
+<!--}-->
+
+<!--.comment-name {-->
+<!--  font-size: 16px;-->
+<!--  font-weight: bold;-->
+<!--  margin-bottom: 4px; /* Small space between name and date */-->
+<!--}-->
+
+<!--.comment-date {-->
+<!--  font-size: 14px;-->
+<!--  color: #999;-->
+<!--}-->
+
+<!--.comment-body {-->
+<!--  font-size: 14px;-->
+<!--  color: #666;-->
+<!--}-->
+<!--</style>-->
+
+
+
 <template>
-  <div class="custom-switch">
-    <button class="icon-button">
-      <i class="el-icon-search"></i>搜索
-    </button>
-    <label class="switch">
-      <input type="checkbox" v-model="isChecked">
-      <span class="slider round"></span>
-    </label>
-    <div class="labels">
-      <span>允许</span>
-      <span>拒绝</span>
-    </div>
-    <button class="icon-button">
-      <i class="el-icon-paperclip"></i>附件
-    </button>
-  </div>
+  <el-card class="comment-card">
+    <el-row class="comment-header">
+      <el-avatar class="comment-avatar" shape="square" size="large" src="path_to_avatar.png"/>
+      <div class="comment-info">
+        <div class="comment-name">COMMENTOR</div>
+        <div class="comment-date">20 April 2022, at 14:88 PM</div>
+      </div>
+    </el-row>
+    <el-row class="comment-content">
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime quisquam vero adipisci beatae voluptas dolor ame.
+    </el-row>
+  </el-card>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ElRow, ElAvatar } from 'element-plus';
 
 export default {
-  setup() {
-    const isChecked = ref(false);
-
-    return { isChecked };
+  components: {
+    ElRow,
+    ElAvatar
   }
 }
 </script>
 
 <style scoped>
-.custom-switch {
-  display: flex;
+.comment-card {
+  border-radius: 10px;
+  padding: 12px;
+  background-color: #fff;
+  font-size: 18px;
+}
+
+.comment-header {
   align-items: center;
-  gap: 12px;
-  background-color: #f5f7fa;
-  padding: 8px 16px;
-  border-radius: 5px;
 }
 
-.icon-button {
-  background: #ffffff;
-  border: 1px solid #dcdfe6;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
+.comment-avatar {
+  margin-right: 20px;
+}
+
+.comment-info {
   display: flex;
-  align-items: center;
-  font-size: 14px;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.icon-button i {
-  font-size: 16px;
-  margin-right: 5px;
+.comment-name {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 34px;
-  height: 20px;
+.comment-date {
+  font-weight: bold;
+  font-size: 0.80em;
+  color: #a2a9b4;
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 12px;
-  width: 12px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #409EFF;
-}
-
-input:checked + .slider:before {
-  transform: translateX(14px);
-}
-
-.labels {
-  display: flex;
-  gap: 10px;
-  font-size: 14px;
+.comment-content {
+  font-weight: bold;
+  margin-top: 20px;
+  color: #7f8692;
+  text-align: left;
+  line-height: 1.5;
 }
 </style>
+
