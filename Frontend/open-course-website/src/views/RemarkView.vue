@@ -28,15 +28,15 @@
             <h3>具体指标评分</h3>
             <div class="criteria">
               <span>教学质量</span>
-              <el-slider v-model="ratings.teachingQuality" :min="1" :max="5" :step="1"></el-slider>
+              <el-rate v-model="ratings.teachingQuality" :colors="['#F7BA2A']" size="30"></el-rate>
             </div>
             <div class="criteria">
               <span>课程内容</span>
-              <el-slider v-model="ratings.courseContent" :min="1" :max="5" :step="1"></el-slider>
+              <el-rate v-model="ratings.courseContent" :colors="['#F7BA2A']" size="30"></el-rate>
             </div>
             <div class="criteria">
-              <span>作业难度</span>
-              <el-slider v-model="ratings.assignmentDifficulty" :min="1" :max="5" :step="1"></el-slider>
+              <span>作业布置是否合理</span>
+              <el-rate v-model="ratings.assignmentDifficulty" :colors="['#F7BA2A']" size="30"></el-rate>
             </div>
           </div>
 
@@ -78,7 +78,7 @@ export default {
       console.log('总体评分:', this.overallRating);
       console.log('教学质量:', this.ratings.teachingQuality);
       console.log('课程内容:', this.ratings.courseContent);
-      console.log('作业难度:', this.ratings.assignmentDifficulty);
+      console.log('作业布置是否合理:', this.ratings.assignmentDifficulty);
       console.log('文字评价:', this.textReview);
       // 这里可以添加提交数据的逻辑，例如调用 API
       this.$message.success('评价已提交！');
@@ -136,7 +136,6 @@ h3 {
 }
 
 .el-slider {
-  margin-top: 10px;
-  width: 100%; /* 确保滑块充满容器 */
+  display: none; /* 隐藏滑块组件 */
 }
 </style>
