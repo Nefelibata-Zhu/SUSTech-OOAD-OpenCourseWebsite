@@ -56,46 +56,26 @@ public class CoursewareServiceImpl implements CoursewareService {
     // 用户上传md/pdf类型的课件，服务器提供相应的信息，将文件保存在本地文件系统并将相关的信息（包括文件路径）保存在数据库中
     public Courseware save(MultipartFile file, Courseware coursewareInfo) throws IOException{
 
-        // 获取路径
-        Path uploadCoursewarePath = Paths.get(upload_dir);
-        if (!Files.exists(uploadCoursewarePath)) {
-            Files.createDirectories(uploadCoursewarePath);
-        }
-
-        // 保存文件
-        String fileOriginalName = file.getOriginalFilename();
-        String fileName = UUID.randomUUID() + "_" + fileOriginalName;
-        Path filePath = uploadCoursewarePath.resolve(fileName);
-        Files.copy(file.getInputStream(), filePath);
+        String filePath = FileTools.saveMultipartFile(file, upload_dir);
 
         // 创建并保存Courseware对象
-        Courseware courseware = new Courseware(filePath.toString(), file, coursewareInfo);
+        Courseware courseware = new Courseware(filePath, file, coursewareInfo);
 
         return coursewareRepository.save(courseware);
     }
 
     @Override
     // 在前端点击文件名的超链接，基于传回的id从文件系统中获取文件并返回http信息
-    public ResponseEntity<Resource> getCourseware(long id) {
+    public ResponseEntity<Resource> getCoursewareById(long id) {
         Courseware courseware = coursewareRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Courseware not found with id: " + id));
 
         String filePathName = courseware.getFileUrl().substring(courseware.getFileUrl().lastIndexOf('/') + 1);
         Path filePath = Paths.get(upload_dir).resolve(filePathName);
 
-        Resource resource;
-        try {
-            resource = new UrlResource(filePath.toUri());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+        Resource resource = FileTools.loadFileAsResource(filePath);
 
-        String contentType;
-        try {
-            contentType = Files.probeContentType(filePath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String contentType = FileTools.getContentType(filePath);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))

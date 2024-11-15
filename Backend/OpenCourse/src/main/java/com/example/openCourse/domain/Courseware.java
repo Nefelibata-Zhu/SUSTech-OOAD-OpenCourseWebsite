@@ -3,10 +3,12 @@ package com.example.openCourse.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-
+@Getter
+@Setter
+@ToString
 @Entity
 @DiscriminatorValue("courseware")
 public class Courseware extends FileInfo {
@@ -18,46 +20,23 @@ public class Courseware extends FileInfo {
     private int version = 1; // 课件版本号
     @Column(name = "could_download")
     private boolean couldDownload = true;
+    // TODO: 基於這兩個屬性改寫函數
+    @Column(name = "courseware_no")
+    private int coursewareNo;
+    @Column(name = "current_used")
+    private boolean currentUsed;
 
-    public Courseware() {};
+    public Courseware() {
+    };
 
     public Courseware(String url, MultipartFile file, Courseware coursewareInfo) {
-        super(url, file, "courseware", LocalDateTime.now(), LocalDateTime.now());
+        super(url, file, "courseware");
         this.courseName = coursewareInfo.getCourseName();
         this.chapterName = coursewareInfo.getChapterName();
         this.version = coursewareInfo.version;
         this.couldDownload = coursewareInfo.couldDownload;
+        this.coursewareNo = coursewareInfo.coursewareNo;
+        this.currentUsed = true;
     }
 
-    public String getCourseName() {
-        return courseName;
-    }
-
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
-
-    public String getChapterName() {
-        return chapterName;
-    }
-
-    public void setChapterName(String chapterName) {
-        this.chapterName = chapterName;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public boolean isCouldDownload() {
-        return couldDownload;
-    }
-
-    public void setCouldDownload(boolean couldDownload) {
-        this.couldDownload = couldDownload;
-    }
 }

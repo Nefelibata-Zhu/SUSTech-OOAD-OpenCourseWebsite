@@ -15,13 +15,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -96,10 +96,10 @@ class CoursewareServiceImplTest {
         assertNotNull(result);
         System.out.println("Url: " + result.getFileUrl());
         assertTrue(result.getFileUrl().endsWith(originalFileName)); // 检查是否包含原始文件名
+        assertEquals(content.getBytes(StandardCharsets.UTF_8).length, result.getFileSize());
         assertEquals(originalFileName, result.getFileName());
         assertEquals("application/pdf", result.getFileType());
         assertEquals("courseware", result.getFilePurpose());
-        assertNotNull(result.getUploadDate());
         assertEquals("Java3", result.getCourseName());
         assertEquals("Chapter 1", result.getChapterName());
 
@@ -113,7 +113,7 @@ class CoursewareServiceImplTest {
     }
 
     @Test
-    void testGetCourseware() throws IOException {
+    void testGetCoursewareById() throws IOException {
         long id = 1L;
         Courseware courseware = new Courseware();
         courseware.setFileUrl("/uploads/test.txt");
@@ -123,7 +123,7 @@ class CoursewareServiceImplTest {
         Path testFile = tempDir.resolve("test.txt");
         Files.write(testFile, "test content".getBytes());
 
-        ResponseEntity<Resource> response = coursewareService.getCourseware(id);
+        ResponseEntity<Resource> response = coursewareService.getCoursewareById(id);
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());

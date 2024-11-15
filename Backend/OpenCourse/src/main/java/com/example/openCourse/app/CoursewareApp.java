@@ -23,7 +23,6 @@ public class CoursewareApp {
     }
 
     // 获取所有文件信息（以json形式）
-
     @GetMapping("/record")
     public List<Courseware> findAll(){
         System.out.println(coursewareService.getClass().getName());
@@ -33,16 +32,16 @@ public class CoursewareApp {
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadCourseware(@PathVariable long id) {
         try {
-            return coursewareService.getCourseware(id);
+            return coursewareService.getCoursewareById(id);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     // upload courseware
-    @PostMapping("/upload-pdf")
-    public ResponseEntity<String> uploadPdf(
-            @RequestParam("pdfFile") MultipartFile file,
+    @PostMapping("/upload-courseware")
+    public ResponseEntity<String> uploadCourseware(
+            @RequestParam("file") MultipartFile file,
             @RequestParam("coursewareInfo") Courseware coursewareInfo) {
 
         // 必要的检测在control层实现
@@ -53,16 +52,17 @@ public class CoursewareApp {
             return ResponseEntity.badRequest().body("Please fill the courseware's info");
         }
 
-        // TODO: add md file type
-        if (!file.getContentType().equals("application/pdf")) {
-            return ResponseEntity.badRequest().body("Please upload pdf or md file");
+        // 检查文件类型为pdf/md
+        String contentType = file.getContentType();
+        if (!"application/pdf".equals(contentType) && !"text/markdown".equals(contentType)) {
+            return ResponseEntity.badRequest().body("Please upload a PDF or MD file.");
         }
 
         try {
             Courseware savedCourseware = coursewareService.save(file, coursewareInfo);
             return ResponseEntity.ok("File uploaded successfully: " + savedCourseware.getFileName());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File uploaded fail: " + e.getMessage());
         }
     }
 
