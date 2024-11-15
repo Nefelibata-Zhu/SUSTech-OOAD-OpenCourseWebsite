@@ -103,7 +103,7 @@
                 <el-col :span="24" >
                   <el-card class="comment-card">
                     <el-row class="comment-header">
-                      <el-avatar class="comment-avatar" shape="square" size="large" :icon="UserFilled"/>
+                      <el-avatar class="comment-avatar" shape="square" size="large" />
                       <div class="comment-info">
                         <div class="comment-name">{{ comment.user.userName }}</div>
                         <div class="comment-date">{{ comment.commentTime }}</div>
@@ -138,179 +138,124 @@
 </template>
 
 <script>
-
-import {Document, ChatLineSquare, Paperclip, VideoCamera, UserFilled} from "@element-plus/icons-vue";
+import { ref } from 'vue';
+import { Document, ChatLineSquare, Paperclip, VideoCamera } from '@element-plus/icons-vue';
 
 export default {
   name: 'ChapterView',
-  computed: {
-    UserFilled() {
-      return UserFilled
-    }
-  },
   components: {
     Document,
     Paperclip,
     ChatLineSquare,
-    VideoCamera
+    VideoCamera,
+  },
+  setup() {
+    // Reactive state
+    const chapterID = ref(1);
+    const user = ref({
+      userID: 1,
+      userName: '张三',
+    });
 
-  },
-  data() {
-    return{
-      chapterID: 1,
-      user: {
-        userID: 1,
-        userName: '张三',
-      },
-      coursewares: [
-        {
-          fileID: 1,
-          fileType: 'pdf',
-          fileUsage: 'courseware',
-          fileName: 'Java基本数据类型.pdf',
-          updateTime: '2024-10-03',
-        },
-        {
-          fileID: 2,
-          fileType: 'pdf',
-          fileUsage: 'courseware',
-          fileName: 'Java基本数据类型.pdf',
-          updateTime: '2024-10-03',
-        }
-      ],
-      videos: [
-        {
-          fileID: 3,
-          fileType: 'mp4',
-          fileUsage: 'video',
-          fileName: 'Java基本数据类型.mp4',
-          updateTime: '2024-10-03',
-        },
-        {
-          fileID: 4,
-          fileType: 'mp4',
-          fileUsage: 'video',
-          fileName: 'Java基本数据类型.mp4',
-          updateTime: '2024-10-03',
-        },
-        {
-          fileID: 5,
-          fileType: 'mp4',
-          fileUsage: 'video',
-          fileName: '第5次lab课录屏.mp4',
-          updateTime: '2024-10-03',
-        }
-      ],
-      comments: [
-        {
-          commentID: 1,
-          content: '这个课程很好',
-          commentTime: '2024-10-03 12:00',
-          user: {
-            userID: 1,
-            userName: '张三',
-          },
-        },
-        {
-          commentID: 2,
-          content: 'syy是神',
-          commentTime: '2024-11-11 12:00',
-          user: {
-            userID: 2,
-            userName: 'syy',
-          },
-        },
-        {
-          commentID: 3,
-          content: '为什么1+1=2',
-          commentTime: '2024-11-11 02:00',
-          user: {
-            userID: 3,
-            userName: '李四',
-          },
-        },
-        {
-          commentID: 4,
-          content: '这道题怎么做',
-          commentTime: '2024-10-03 15:00',
-          user: {
-            userID: 4,
-            userName: '王五',
-          },
-        },
-      ],
-      attachments: [
-        {
-          fileID: 6,
-          fileType: 'zip',
-          fileUsage: 'attachment',
-          fileName: '基本项目结构.zip',
-          updateTime: '2024-11-11',
-        },
-        {
-          fileID: 7,
-          fileType: 'zip',
-          fileUsage: 'attachment',
-          fileName: '测试样例.zip',
-          updateTime: '2024-11-11',
-        }
-      ],
-      status: '课件',
-      dialogVisible: false,
-      commentText: '',
-    }
-  },
-  methods: {
-    getText1(status){
-      if (status === '课件') {
+
+
+    const coursewares = ref([
+      { fileID: 1, fileType: 'pdf', fileUsage: 'courseware', fileName: 'Java基本数据类型.pdf', updateTime: '2024-10-03' },
+      { fileID: 2, fileType: 'pdf', fileUsage: 'courseware', fileName: 'Java基本数据类型.pdf', updateTime: '2024-10-03' },
+    ]);
+
+    const videos = ref([
+      { fileID: 3, fileType: 'mp4', fileUsage: 'video', fileName: 'Java基本数据类型.mp4', updateTime: '2024-10-03' },
+      { fileID: 4, fileType: 'mp4', fileUsage: 'video', fileName: 'Java基本数据类型.mp4', updateTime: '2024-10-03' },
+      { fileID: 5, fileType: 'mp4', fileUsage: 'video', fileName: '第5次lab课录屏.mp4', updateTime: '2024-10-03' },
+    ]);
+
+    const comments = ref([
+      { commentID: 1, content: '这个课程很好', commentTime: '2024-10-03 12:00', user: { userID: 1, userName: '张三' } },
+      { commentID: 2, content: 'syy是神', commentTime: '2024-11-11 12:00', user: { userID: 2, userName: 'syy' } },
+      { commentID: 3, content: '为什么1+1=2', commentTime: '2024-11-11 02:00', user: { userID: 3, userName: '李四' } },
+      { commentID: 4, content: '这道题怎么做', commentTime: '2024-10-03 15:00', user: { userID: 4, userName: '王五' } },
+    ]);
+
+    const attachments = ref([
+      { fileID: 6, fileType: 'zip', fileUsage: 'attachment', fileName: '基本项目结构.zip', updateTime: '2024-11-11' },
+      { fileID: 7, fileType: 'zip', fileUsage: 'attachment', fileName: '测试样例.zip', updateTime: '2024-11-11' },
+    ]);
+
+    const status = ref('课件');
+    const dialogVisible = ref(false);
+    const commentText = ref('');
+
+    // Methods
+    const getText1 = (statusValue) => {
+      if (statusValue === '课件') {
         return '课件列表';
-      } else if (status === '视频') {
+      } else if (statusValue === '视频') {
         return '视频列表';
-      } else if (status === '评论') {
+      } else if (statusValue === '评论') {
         return '评论列表';
-      } else if (status === '附件') {
+      } else if (statusValue === '附件') {
         return '附件列表';
       }
-    },
-    getUploadButtonText(status){
-      if (status === '课件') {
+    };
+
+    const getUploadButtonText = (statusValue) => {
+      if (statusValue === '课件') {
         return '上传课件';
-      } else if (status === '视频') {
+      } else if (statusValue === '视频') {
         return '上传视频';
-      } else if (status === '评论') {
+      } else if (statusValue === '评论') {
         return '发表评论';
-      } else if (status === '附件') {
+      } else if (statusValue === '附件') {
         return '上传附件';
       }
-    },
-    downloadFile(fileIndex){
-      alert("Downloading the file" + fileIndex)
-      console.log("Downloading the file" + fileIndex);
-    },
-    deleteFile(fileIndex){
-      alert("Deleting the file" + fileIndex)
-      console.log("Deleting the file" + fileIndex);
-    },
-    submitComment() {
-      if (!this.commentText.trim()) {
+    };
+
+    const downloadFile = (fileIndex) => {
+      alert(`Downloading the file ${fileIndex}`);
+      console.log(`Downloading the file ${fileIndex}`);
+    };
+
+    const deleteFile = (fileIndex) => {
+      alert(`Deleting the file ${fileIndex}`);
+      console.log(`Deleting the file ${fileIndex}`);
+    };
+
+    const submitComment = () => {
+      if (!commentText.value.trim()) {
         alert('评论内容不能为空！');
         return;
       }
 
       const newComment = {
-        commentID: this.comments.length + 1,
-        content: this.commentText,
-        commentTime: new Date().toLocaleString('zh-CN', { hour12: false }).slice(0,16).replaceAll('/', '-'), // 2024-10-03 12:00
-        user: this.user,
+        commentID: comments.value.length + 1,
+        content: commentText.value,
+        commentTime: new Date().toLocaleString('zh-CN', { hour12: false }).slice(0, 16).replaceAll('/', '-'), // 2024-10-03 12:00
+        user: user.value,
       };
 
-      this.comments.push(newComment);
-      this.commentText = '';
-      this.dialogVisible = false;
-    }
+      comments.value.push(newComment);
+      commentText.value = '';
+      dialogVisible.value = false;
+    };
 
+    return {
+      chapterID,
+      user,
+      coursewares,
+      videos,
+      comments,
+      attachments,
+      status,
+      dialogVisible,
+      commentText,
+      getText1,
+      getUploadButtonText,
+      downloadFile,
+      deleteFile,
+      submitComment,
+    };
   },
-
 };
 </script>
 
