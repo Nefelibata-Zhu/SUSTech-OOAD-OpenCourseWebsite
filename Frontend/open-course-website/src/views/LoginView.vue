@@ -35,19 +35,35 @@
         </div>
 
         <div class="form-style" v-if="status == 'signUp'">
-          <h2 style="font-size: 25px; color: black">Registered Account</h2>
+          <h2 style="font-size: 25px; color: black">Register Account</h2>
           <div>
             <el-icon><User /></el-icon>
-            <input type="text" placeholder="Account" style="margin-left: 10px;">
+            <input v-model='username'  type="text" placeholder="Account" style="margin-left: 10px;">
           </div>
           <div>
             <el-icon color="black"><Lock /></el-icon>
-            <input type="text" placeholder="Password" style="margin-left: 10px;">
+            <input v-model='password' type="text" placeholder="Password" style="margin-left: 10px;">
+          </div>
+          <div>
+            <el-icon><Aim /></el-icon>
+            <el-select
+                v-model="selectedIdentity"
+                placeholder="Select your identity"
+                size="large"
+                style="width: 240px; margin-left: 10px;"
+            >
+              <el-option
+                  v-for="item in identities"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+              />
+            </el-select>
           </div>
           <button class="submit-button" @click="signUp">Sign up</button>
         </div>
-
       </div>
+
       <div :class="overlay">
         <div class="form-style" v-if="status == 'signIn'">
           <h2 class="overlaytitleH2">Welcome to SUSTech Open Course Website!</h2>
@@ -70,6 +86,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   components: {},
   data() {
@@ -104,11 +121,35 @@ export default {
         this.status = 'signIn'
       }, 200)
     },
-    signIn(){
-      alert('登录成功！');
+    async signIn() {
+      console.log('Sign in:', this.username, this.password, this.selectedIdentity);
+      try {
+        const response = await axios.post('http://127.0.0.1:4523/m1/5467700-5143103-default/api/auth/signin', {
+          username: this.username,
+          password: this.password,
+          identity: this.selectedIdentity
+        });
+        alert('登录成功！');
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error during sign in:', error);
+        alert('登录失败，请重试！');
+      }
     },
-    signUp(){
-      alert('注册成功！');
+    async signUp() {
+      console.log('Sign up:', this.username, this.password, this.selectedIdentity);
+      try {
+        const response = await axios.post('http://127.0.0.1:4523/m1/5467700-5143103-default/api/auth/signup', {
+          username: this.username,
+          password: this.password,
+          identity: this.selectedIdentity
+        });
+        alert('注册成功！');
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error during sign up:', error);
+        alert('注册失败，请重试！');
+      }
     },
   }
 }

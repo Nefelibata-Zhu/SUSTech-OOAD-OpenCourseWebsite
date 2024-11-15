@@ -29,7 +29,7 @@
       <el-main class="mainbar">
         <span class="mainbar-title">我的课程</span>
         <div class="courses">
-          <el-card v-for="(course, index) in courses" :key="index" class="course-card">
+          <el-card v-for="course in courses" :key="course.courseID" class="course-card" @click="openCourse(course)">
             <div class="course-header">
               <h3>{{ course.title }}</h3>
               <el-tag :type="getPublicTagType(course.publicStatus)">{{ course.publicStatus }}</el-tag>
@@ -53,8 +53,14 @@
 </template>
 
 <script>
+import { useRouter } from "vue-router";
+
 export default {
   name: 'MainView',
+  setup() {
+    const router = useRouter();
+    return { router };
+  },
   components: {
 
   },
@@ -62,6 +68,7 @@ export default {
     return {
       courses: [
         {
+          courseID: 1,
           title: 'Python编程入门',
           university: '南方科技大学',
           instructor: '张三',
@@ -71,6 +78,7 @@ export default {
           students: 1234,
         },
         {
+          courseID: 2,
           title: '数据结构与算法',
           university: '南方科技大学',
           instructor: '李四',
@@ -80,6 +88,7 @@ export default {
           students: 987,
         },
         {
+          courseID: 3,
           title: '机器学习基础',
           university: '南方科技大学',
           instructor: '王五',
@@ -89,6 +98,7 @@ export default {
           students: 2987,
         },
         {
+          courseID: 4,
           title: '人工智能',
           university: '南方科技大学',
           instructor: '王五',
@@ -116,6 +126,10 @@ export default {
     createCourse() {
       alert('创建课程');
     },
+    openCourse(course){
+      console.log(course.courseID)
+      this.router.push({ name: 'course', params: { courseID: course.courseID } });
+    }
   },
 };
 </script>

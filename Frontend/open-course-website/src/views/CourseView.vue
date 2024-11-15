@@ -16,7 +16,7 @@
           <div class="chapterTypeBox">项目类</div>
         </div>
 
-        <el-row :gutter="20" v-for="(chapter, index) in this.chapters" :key="chapter.chapterID">
+        <el-row :gutter="20" v-for="(chapter, chapterIndex) in this.course.chapters" :key="chapter.chapterID">
           <el-col :span="24" >
             <el-card :style="{backgroundColor: getChapterBackgroundColor(chapter.chapterType)}">
               <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -28,13 +28,13 @@
               </div>
               <div class="container">
                 <el-icon size="20px" class="edit-and-delete-icons" @click="this.currentChapter={...chapter}; showAddChapterDialog=true"><edit /></el-icon>
-                <el-icon size="20px" class="edit-and-delete-icons" @click="deleteChapter(index)"><delete /></el-icon>
+                <el-icon size="20px" class="edit-and-delete-icons" @click="deleteChapter(chapterIndex)"><delete /></el-icon>
               </div>
 <!--              <el-button-group>-->
 <!--                <el-button @click="this.currentChapter={...chapter}; showAddChapterDialog=true">-->
 <!--                  <el-icon><edit /></el-icon>-->
 <!--                </el-button>-->
-<!--                <el-button @click="deleteChapter(index)">-->
+<!--                <el-button @click="deleteChapter(chapterIndex)">-->
 <!--                  <el-icon><delete /></el-icon>-->
 <!--                </el-button>-->
 <!--              </el-button-group>-->
@@ -71,53 +71,58 @@
 
 
 <script>
-import {CirclePlus} from "@element-plus/icons-vue";
+import { CirclePlus } from "@element-plus/icons-vue";
+import { useRoute } from 'vue-router';
+import { ref, reactive, onMounted } from 'vue';
+import axios from 'axios';
 
 export default {
   name: 'CourseView',
   components: {
     CirclePlus
-
   },
-  data() {
-    return {
-      courseID: 1,
-      courseName: '计算机程序设计基础',
-      courseType: '公开课',
-      chapters: [
-        {
-          chapterID: 1,
-          chapterName: 'Java基础语法',
-          chapterDescription: '变量、数据类型',
-          chapterType: '教学类',
-        },
-        {
-          chapterID: 2,
-          chapterName: 'Java基础练习',
-          chapterDescription: '20道编程练习题',
-          chapterType: '作业类',
-        },
-        {
-          chapterID: 3,
-          chapterName: '象棋小游戏项目',
-          chapterDescription: '用Java设计并实现一个象棋小游戏',
-          chapterType: '项目类',
-        }
-      ],
-      showAddChapterDialog: false,
-      currentChapter: null,
-      newChapter: {
-        chapterName: '',
-        chapterDescription: '',
-        chapterType: '',
-      },
+  setup() {
+    const route = useRoute();
+    console.log("读取路径参数中的课程ID:", route.params.courseID);
+    const courseID = ref(route.params.courseID);
+
+    console.log('courseID:', courseID.value);
+    const course = reactive({
+      courseID: 0,
+      courseName: '',
+      courseType: '',
+      chapters: []
+    });
+    const showAddChapterDialog = ref(false);
+    const currentChapter = ref(null);
+    const newChapter = reactive({
+      chapterName: '',
+      chapterDescription: '',
+      chapterType: '',
+    });
+
+    const loadCourseData = () => {
+      const url = `http://127.0.0.1:4523/m1/5467700-5143103-default/api/course/getCourseData/${courseID.value}`;
+      axios.get(url)
+          .then(response => {
+            const { courseID, courseName, courseType, chapters } = response.data;
+            course.courseID = courseID;
+            course.courseName = courseName;
+            course.courseType = courseType;
+            course.chapters = chapters.map(ch => ({
+              chapterID: ch.chapterID,
+              chapterName: ch.chapterName,
+              chapterDescription: ch.chapterDescription,
+              chapterType: ch.chapterType
+            }));
+          })
+          .catch(error => {
+            console.error("获取课程数据时发生错误:", error);
+          });
     };
-  },
-  methods: {
-    openChapter(){
 
-    },
-    getChapterBackgroundColor(type) {
+
+    const getChapterBackgroundColor = (type) => {
       switch (type) {
         case '教学类':
           return '#dcfce7';
@@ -128,8 +133,9 @@ export default {
         default:
           return 'primary';
       }
-    },
-    getChapterTextColor(type) {
+    };
+
+    const getChapterTextColor = (type) => {
       switch (type) {
         case '教学类':
           return '#46895f';
@@ -140,8 +146,9 @@ export default {
         default:
           return 'primary';
       }
-    },
-    getChapterStartText(type){
+    };
+
+    const getChapterStartText = (type) => {
       switch (type) {
         case '教学类':
           return '开始学习';
@@ -152,33 +159,47 @@ export default {
         default:
           return '开始';
       }
-    },
-    addNewChapter(){
-      if (this.currentChapter.chapterID) {
-        // 如果有id，则编辑已存在章节
-        console.log('update chapter');
-        const index = this.chapters.findIndex(c => c.chapterID === this.currentChapter.chapterID);
+    };
+
+    const addNewChapter = () => {
+      if (currentChapter.value.chapterID) {
+        const index = course.chapters.findIndex(c => c.chapterID === currentChapter.value.chapterID);
         if (index !== -1) {
-          this.chapters.splice(index, 1, {...this.currentChapter});
+          course.chapters.splice(index, 1, { ...currentChapter.value });
         }
       } else {
-        // 没有id，添加新章节
-        const newId = this.chapters.length + 1;  // 确保ID唯一
-        const newChapter = {
+        const newId = course.chapters.length + 1;
+        const newChapterData = {
           chapterID: newId,
-          ...this.currentChapter,
+          ...currentChapter.value,
         };
-        this.chapters.push(newChapter);
+        course.chapters.push(newChapterData);
       }
-      this.showAddChapterDialog = false;
-    },
-    editChapter(){
+      showAddChapterDialog.value = false;
+    };
 
-    },
-    deleteChapter(index){
-      this.chapters.splice(index, 1);
-    },
-  },
+    const deleteChapter = (index) => {
+      course.chapters.splice(index, 1);
+    };
+
+    onMounted(() => {
+      loadCourseData();
+    });
+
+    return {
+      courseID,
+      course,
+      showAddChapterDialog,
+      currentChapter,
+      newChapter,
+      loadCourseData,
+      getChapterBackgroundColor,
+      getChapterTextColor,
+      getChapterStartText,
+      addNewChapter,
+      deleteChapter
+    };
+  }
 };
 </script>
 
