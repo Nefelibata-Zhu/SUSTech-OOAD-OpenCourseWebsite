@@ -85,21 +85,21 @@ export default {
     const route = useRoute();
     console.log("读取路径参数中的课程ID:", route.params.courseID);
     const courseID = ref(route.params.courseID);
-
     console.log('courseID:', courseID.value);
+
     const course = reactive({
       courseID: 0,
       courseName: '',
       courseType: '',
       chapters: []
     });
-    const showAddChapterDialog = ref(false);
-    const currentChapter = ref(null);
     const newChapter = reactive({
       chapterName: '',
       chapterDescription: '',
       chapterType: '',
     });
+    const showAddChapterDialog = ref(false);
+    const currentChapter = ref(null);
 
     const loadCourseData = () => {
       const url = `http://127.0.0.1:4523/m1/5467700-5143103-default/api/course/getCourseData/${courseID.value}`;

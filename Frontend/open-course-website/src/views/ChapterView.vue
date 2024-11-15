@@ -138,8 +138,9 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { Document, ChatLineSquare, Paperclip, VideoCamera } from '@element-plus/icons-vue';
+import axios from 'axios';
 
 export default {
   name: 'ChapterView',
@@ -151,40 +152,108 @@ export default {
   },
   setup() {
     // Reactive state
-    const chapterID = ref(1);
+    const chapterID = ref(1);  // 当前章节ID
+
     const user = ref({
       userID: 1,
       userName: '张三',
     });
 
-
-
-    const coursewares = ref([
-      { fileID: 1, fileType: 'pdf', fileUsage: 'courseware', fileName: 'Java基本数据类型.pdf', updateTime: '2024-10-03' },
-      { fileID: 2, fileType: 'pdf', fileUsage: 'courseware', fileName: 'Java基本数据类型.pdf', updateTime: '2024-10-03' },
-    ]);
-
-    const videos = ref([
-      { fileID: 3, fileType: 'mp4', fileUsage: 'video', fileName: 'Java基本数据类型.mp4', updateTime: '2024-10-03' },
-      { fileID: 4, fileType: 'mp4', fileUsage: 'video', fileName: 'Java基本数据类型.mp4', updateTime: '2024-10-03' },
-      { fileID: 5, fileType: 'mp4', fileUsage: 'video', fileName: '第5次lab课录屏.mp4', updateTime: '2024-10-03' },
-    ]);
-
-    const comments = ref([
-      { commentID: 1, content: '这个课程很好', commentTime: '2024-10-03 12:00', user: { userID: 1, userName: '张三' } },
-      { commentID: 2, content: 'syy是神', commentTime: '2024-11-11 12:00', user: { userID: 2, userName: 'syy' } },
-      { commentID: 3, content: '为什么1+1=2', commentTime: '2024-11-11 02:00', user: { userID: 3, userName: '李四' } },
-      { commentID: 4, content: '这道题怎么做', commentTime: '2024-10-03 15:00', user: { userID: 4, userName: '王五' } },
-    ]);
-
-    const attachments = ref([
-      { fileID: 6, fileType: 'zip', fileUsage: 'attachment', fileName: '基本项目结构.zip', updateTime: '2024-11-11' },
-      { fileID: 7, fileType: 'zip', fileUsage: 'attachment', fileName: '测试样例.zip', updateTime: '2024-11-11' },
-    ]);
+    // 课件、视频、附件、评论
+    const coursewares = reactive([]);
+    const videos = reactive([]);
+    const attachments = reactive([]);
+    const comments = reactive([]);
 
     const status = ref('课件');
     const dialogVisible = ref(false);
     const commentText = ref('');
+
+    // Methods to get data from the backend
+    const loadCoursewares = async () => {
+      try {
+        const url = `http://127.0.0.1:4523/m1/5467700-5143103-default/api/chapter/getCoursewares/${chapterID.value}`;
+        const response = await axios.get(url);
+        console.log("课件列表:", response.data);
+        const newCoursewares = response.data.map(item => ({
+          fileID: item.fileID ?? null,
+          fileType: item.fileType ?? '',
+          fileUsage: item.fileUsage ?? 'courseware', // 如果不存在则设置默认值
+          fileName: item.fileName ?? '',
+          updateTime: item.updateTime ?? ''
+        }));
+
+        coursewares.splice(0, coursewares.length, ...newCoursewares);
+        console.log("课件列表:", coursewares);
+      } catch (error) {
+        console.error('Failed to load coursewares:', error);
+      }
+    };
+
+    const loadVideos = async () => {
+      try {
+        const url = `http://127.0.0.1:4523/m1/5467700-5143103-default/api/chapter/getVideos/${chapterID.value}`;
+        const response = await axios.get(url);
+
+        const newVideos = response.data.map(item => ({
+          fileID: item.fileID ?? null,
+          fileType: item.fileType ?? '',
+          fileUsage: item.fileUsage ?? 'video', // 如果不存在则设置默认值
+          fileName: item.fileName ?? '',
+          updateTime: item.updateTime ?? ''
+        }));
+
+        videos.splice(0, videos.length, ...newVideos);
+        console.log("视频列表:", videos);
+      } catch (error) {
+        console.error('Failed to load videos:', error);
+      }
+    };
+
+    const loadComments = async () => {
+      try {
+        const url = `http://127.0.0.1:4523/m1/5467700-5143103-default/api/chapter/getComments/${chapterID.value}`;
+        const response = await axios.get(url);
+
+        const newComments = response.data.map(item => ({
+          commentID: item.commentID ?? null,
+          content: item.content ?? '',
+          commentTime: item.commentTime ?? '',
+          user: item.user ?? null,
+        }));
+
+        comments.splice(0, comments.length, ...newComments);
+        console.log("评论列表:", comments);
+      } catch (error) {
+        console.error('Failed to load comments:', error);
+      }
+    };
+
+    const loadAttachments = async () => {
+      try {
+        const url = `http://127.0.0.1:4523/m1/5467700-5143103-default/api/chapter/getAttachments/${chapterID.value}`;
+        const response = await axios.get(url);
+
+        const newAttachments = response.data.map(item => ({
+          fileID: item.fileID ?? null,
+          fileType: item.fileType ?? '',
+          fileUsage: item.fileUsage ?? 'attachment', // 如果不存在则设置默认值
+          fileName: item.fileName ?? '',
+          updateTime: item.updateTime ?? ''
+        }));
+
+        attachments.splice(0, attachments.length, ...newAttachments);
+        console.log("附件列表:", attachments);
+      } catch (error) {
+        console.error('Failed to load attachments:', error);
+      }
+    };
+
+    // Call the load methods when component is created or chapterID changes
+    loadCoursewares();
+    loadVideos();
+    loadComments();
+    loadAttachments();
 
     // Methods
     const getText1 = (statusValue) => {
@@ -228,13 +297,13 @@ export default {
       }
 
       const newComment = {
-        commentID: comments.value.length + 1,
+        commentID: comments.length + 1,
         content: commentText.value,
         commentTime: new Date().toLocaleString('zh-CN', { hour12: false }).slice(0, 16).replaceAll('/', '-'), // 2024-10-03 12:00
         user: user.value,
       };
 
-      comments.value.push(newComment);
+      comments.push(newComment);
       commentText.value = '';
       dialogVisible.value = false;
     };
@@ -254,10 +323,15 @@ export default {
       downloadFile,
       deleteFile,
       submitComment,
+      loadCoursewares,
+      loadVideos,
+      loadComments,
+      loadAttachments
     };
   },
 };
 </script>
+
 
 <style>
 .slideway {
